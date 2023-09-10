@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const anecdotes = [
@@ -13,7 +13,8 @@ function App() {
   ];
   const [currentAnec, setCurrentAnec] = useState("anecdotes displays here");
   const [vote, setVote] = useState(Array(anecdotes.length).fill(0));
-
+  const [highestVote,setHigestVote] = useState(null)
+  
   function SwitchAnecdotes() {
     setCurrentAnec(anecdotes[Math.floor(Math.random() * anecdotes.length)]);
   }
@@ -26,24 +27,45 @@ function App() {
     );
     console.log(vote);
   }
-
+  useEffect(()=>{
+      let highest = 0
+      vote.forEach((ele,i)=>{
+          if(ele > highest){
+            highest = ele
+            setHigestVote(i)
+          }
+      })
+      console.log(highestVote)
+  },[vote])
   return (
     <>
-      <div>{currentAnec}</div>
       <div>
-        {!anecdotes.includes(currentAnec)
-          ? ""
-          : vote[anecdotes.indexOf(currentAnec)] < 2
-          ? `has ${vote[anecdotes.indexOf(currentAnec)]} vote`
-          : `has ${vote[anecdotes.indexOf(currentAnec)]} votes`}
+        <h1>Anecdotes of the day</h1>
+        <div>{currentAnec}</div>
+        <div>
+          {!anecdotes.includes(currentAnec)
+            ? ""
+            : vote[anecdotes.indexOf(currentAnec)] < 2
+            ? `has ${vote[anecdotes.indexOf(currentAnec)]} vote`
+            : `has ${vote[anecdotes.indexOf(currentAnec)]} votes`}
+        </div>
+        <div>
+          {!anecdotes.includes(currentAnec) ? (
+            ""
+          ) : (
+            <button onClick={IncVotes}>vote</button>
+          )}
+          <button onClick={SwitchAnecdotes}>next anecdotes</button>
+        </div>
       </div>
       <div>
-        {!anecdotes.includes(currentAnec) ? (
-          ""
-        ) : (
-          <button onClick={IncVotes}>vote</button>
-        )}
-        <button onClick={SwitchAnecdotes}>next anecdotes</button>
+        <h1>Anecdotes with most votes</h1>
+        <div>{ highestVote === null ? "anecdotes with the highest vote will display here" : anecdotes[highestVote]} </div>   
+        { highestVote === null
+            ? ""
+            : vote[highestVote] < 2
+            ? `has ${vote[highestVote]} vote`
+            : `has ${vote[highestVote]} votes`}
       </div>
     </>
   );
